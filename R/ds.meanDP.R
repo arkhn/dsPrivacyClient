@@ -8,13 +8,13 @@
 #' @export
 #'
 #' @examples
-ds.meanDP <- function(object, option, datasources = NULL) {
+ds.meanDP <- function(object, datasources = NULL) {
 
   if (is.null(datasources)) {
     datasources <- DSI::datashield.connections_find()
   }
 
-  cally <- paste0("basicFunctionDS(", object, ", ", option, ")")
+  cally <- paste0("meanDPDS(", object, ")")
   result <- DSI::datashield.aggregate(datasources, as.symbol(cally))
 
   return(result)

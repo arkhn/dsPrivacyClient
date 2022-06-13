@@ -2,4 +2,6 @@
 
 export(ds.boundedMeanDP)
 export(ds.boundedSumDP)
+export(ds.maxDP)
 export(ds.medianDP)
+export(ds.minDP)

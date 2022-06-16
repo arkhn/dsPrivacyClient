@@ -3,6 +3,7 @@
 export(ds.boundedMeanDP)
 export(ds.boundedStandardDeviationDP)
 export(ds.boundedSumDP)
+export(ds.boundedVarianceDP)
 export(ds.maxDP)
 export(ds.medianDP)
 export(ds.minDP)

@@ -2,13 +2,42 @@
 % Please edit documentation in R/ds.boundedMeanDP.R
 \name{ds.boundedMeanDP}
 \alias{ds.boundedMeanDP}
-\title{Title}
+\title{Differentially private mean}
 \usage{
-ds.boundedMeanDP(datasources, input_data, epsilon, lower_bound, upper_bound)
+ds.boundedMeanDP(
+  input_data,
+  epsilon,
+  lower_bound,
+  upper_bound,
+  type = "combine",
+  datasources = NULL
+)
 }
 \arguments{
-\item{datasources}{}
+\item{input_data}{the input vector}
+
+\item{epsilon}{privacy budget}
+
+\item{lower_bound}{lower bound for input values}
+
+\item{upper_bound}{upper bound for input values}
+
+\item{type}{a character string that represents the type of analysis to carry out.
+This can be set as \code{'combine'}, \code{'split'} or \code{'both'}.}
+
+\item{datasources}{a list of \code{\link{DSConnection-class}}
+objects obtained after login. If the \code{datasources} argument is not specified
+the default set of connections will be used: see \code{\link{datashield.connections_default}}.}
+}
+\value{
+\code{ds.boundedMeanDP} returns to the client-side a list including: \cr
+\code{Mean.by.Study} (private mean) and
+\code{Ntotal} (sum of missing and valid observations)
+separately for each study (if \code{type = split} or \code{type = both}). \cr
+\code{Global.Mean} (private mean) and \code{Ntotal}
+across all studies combined (if \code{type = combine} or \code{type = both}). \cr
+\code{Nstudies}: number of studies being analysed.
 }
 \description{
-Title
+Differentially private mean
 }

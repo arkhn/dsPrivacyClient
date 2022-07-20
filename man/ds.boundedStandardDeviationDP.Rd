@@ -2,19 +2,32 @@
 % Please edit documentation in R/ds.boundedStandardDeviationDP.R
 \name{ds.boundedStandardDeviationDP}
 \alias{ds.boundedStandardDeviationDP}
-\title{Title}
+\title{Differentially private standard deviation}
 \usage{
 ds.boundedStandardDeviationDP(
-  datasources,
   input_data,
   epsilon,
   lower_bound,
-  upper_bound
+  upper_bound,
+  datasources = NULL
 )
 }
 \arguments{
-\item{datasources}{}
+\item{input_data}{the input vector}
+
+\item{epsilon}{privacy budget}
+
+\item{lower_bound}{lower bound for input values}
+
+\item{upper_bound}{upper bound for input values}
+
+\item{datasources}{a list of \code{\link{DSConnection-class}}
+objects obtained after login. If the \code{datasources} argument is not specified
+the default set of connections will be used: see \code{\link{datashield.connections_default}}.}
+}
+\value{
+\code{ds.boundedStandardDeviationDP} returns a differentially private standard deviation
 }
 \description{
-Title
+Differentially private standard deviation
 }

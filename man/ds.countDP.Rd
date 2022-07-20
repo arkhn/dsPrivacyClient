@@ -2,13 +2,27 @@
 % Please edit documentation in R/ds.countDP.R
 \name{ds.countDP}
 \alias{ds.countDP}
-\title{Title}
+\title{Differentially private count}
 \usage{
-ds.countDP(datasources, input_data, epsilon, type = "combine")
+ds.countDP(input_data, epsilon, type = "combine", datasources = NULL)
 }
 \arguments{
-\item{datasources}{}
+\item{input_data}{the input vector}
+
+\item{epsilon}{privacy budget}
+
+\item{type}{a character string that represents the type of analysis to carry out.
+This can be set as \code{'combine'}, \code{'split'} or \code{'both'}.}
+
+\item{datasources}{a list of \code{\link{DSConnection-class}}
+objects obtained after login. If the \code{datasources} argument is not specified
+the default set of connections will be used: see \code{\link{datashield.connections_default}}.}
+}
+\value{
+\code{ds.countDP} returns to the client-side a list including: \cr
+\code{Count.by.Study} (private count) for each study (if \code{type = split} or \code{type = both}). \cr
+\code{Global.Count} (private count) and across all studies combined (if \code{type = combine} or \code{type = both}).
 }
 \description{
-Title
+Differentially private count
 }

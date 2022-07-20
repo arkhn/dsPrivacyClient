@@ -2,13 +2,38 @@
 % Please edit documentation in R/ds.minDP.R
 \name{ds.minDP}
 \alias{ds.minDP}
-\title{Title}
+\title{Differentially private min}
 \usage{
-ds.minDP(datasources, input_data, epsilon, lower_bound, upper_bound)
+ds.minDP(
+  input_data,
+  epsilon,
+  lower_bound,
+  upper_bound,
+  type = "combine",
+  datasources = NULL
+)
 }
 \arguments{
-\item{datasources}{}
+\item{input_data}{the input vector}
+
+\item{epsilon}{privacy budget}
+
+\item{lower_bound}{lower bound for input values}
+
+\item{upper_bound}{upper bound for input values}
+
+\item{type}{a character string that represents the type of analysis to carry out.
+This can be set as \code{'combine'}, \code{'split'} or \code{'both'}.}
+
+\item{datasources}{a list of \code{\link{DSConnection-class}}
+objects obtained after login. If the \code{datasources} argument is not specified
+the default set of connections will be used: see \code{\link{datashield.connections_default}}.}
+}
+\value{
+\code{ds.minDP} returns to the client-side a list including: \cr
+\code{Min.by.Study} (private min) for each study (if \code{type = split} or \code{type = both}). \cr
+\code{Global.Min} (private min) and across all studies combined (if \code{type = combine} or \code{type = both}).
 }
 \description{
-Title
+Differentially private min
 }

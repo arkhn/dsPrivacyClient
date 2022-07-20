@@ -1,14 +1,20 @@
-#' Title
+#' @title Differentially private covariance
 #'
-#' @param object
-#' @param option
-#' @param datasources
+#' @param x First input to the covariance
+#' @param y Second input to the covariance
+#' @param epsilon Privacy budget
+#' @param x_min Lower bound for x
+#' @param x_max Upper bound for x
+#' @param y_min Lower bound for y
+#' @param y_max Upper bound for y
+#' @param datasources a list of \code{\link{DSConnection-class}} 
+#' objects obtained after login. If the \code{datasources} argument is not specified
+#' the default set of connections will be used: see \code{\link{datashield.connections_default}}.
 #'
-#' @return
+#' @return \code{ds.boundedCovarianceDP} returns a differentially private covariance
 #' @export
-#'
-#' @examples
-ds.boundedCovarianceDP <- function(datasources, x, y, epsilon, x_min, x_max, y_min, y_max) {
+
+ds.boundedCovarianceDP <- function(x, y, epsilon, x_min, x_max, y_min, y_max, datasources) {
 
   if (is.null(datasources)) {
     datasources <- DSI::datashield.connections_find()

@@ -1,3 +1,5 @@
+source("R/utils.R")
+
 #' @title Differentially private student-test
 #'
 #' @param x First group to compare with the student-test
@@ -10,6 +12,8 @@
 #' @param datasources a list of \code{\link{DSConnection-class}} 
 #' objects obtained after login. If the \code{datasources} argument is not specified
 #' the default set of connections will be used: see \code{\link{datashield.connections_default}}.
+#' @param type a character string that represents the type of analysis to carry out.
+#' This can be set as \code{'combine'}, \code{'split'} or \code{'both'}.
 #'
 #' @return \code{ds.studentTestDP} returns a differentially private student-test
 #' @export
@@ -19,13 +23,9 @@ ds.studentTestDP <- function(datasources, x, y, epsilon, x_min, x_max, y_min, y_
     if (is.null(datasources)) {
         datasources <- DSI::datashield.connections_find()
     }
-
     split_epsilon <- epsilon/2
-
-    cally_x <- paste0("calculationsForStudentTestDP(", x, ", ", split_epsilon, ", ", x_min, ", ", x_max, ")")
-    cally_y <- paste0("calculationsForStudentTestDP(", y, ", ", split_epsilon, ", ", y_min, ", ", y_max, ")")
-    res_x <- DSI::datashield.aggregate(datasources, as.symbol(cally_x))
-    res_y <- DSI::datashield.aggregate(datasources, as.symbol(cally_y))
+    res_x <- getGroupResult(datasources, x, split_epsilon, x_min, x_max)
+    res_y <- getGroupResult(datasources, y, split_epsilon, y_min, y_max)
     
     Nstudies <- length(datasources)
     
@@ -48,9 +48,9 @@ computeGlobalStats <- function(Nstudies, input) {
     GlobalSumSquares <- 0
     GlobalNvalid <- 0  
     for (i in 1:Nstudies){
-        GlobalSum <- GlobalSum +  input[[i]]$Sum
-        GlobalSumSquares <- GlobalSumSquares +  input[[i]]$SumSquares
-        GlobalNvalid <- GlobalNvalid +  input[[i]]$Nvalid
+        GlobalSum <- GlobalSum +  input$Sum[[i]]
+        GlobalSumSquares <- GlobalSumSquares +  input$SumSquares[[i]]
+        GlobalNvalid <- GlobalNvalid +  input$Nvalid[[i]]
     }
 
     GlobalVar <- GlobalSumSquares/(GlobalNvalid-1) - (GlobalSum^2)/(GlobalNvalid*(GlobalNvalid-1))
@@ -65,19 +65,28 @@ computeStudentTestCombine <- function(Nstudies, input_x, input_y) {
     return (StudentTest)
 }
 
-computeLocalStats <- function(input_col){
-    Nvalid <- as.numeric(input_col$Nvalid)
-    Mean <- input_col$Sum / input_col$Nvalid
-    Var <- input_col$SumSquares/(Nvalid-1) - (input_col$Sum^2)/(Nvalid*(Nvalid-1))
+computeLocalStats <- function(Sum, SumSquares, Nvalid){
+    Nvalid <- as.numeric(Nvalid)
+    Mean <- Sum / Nvalid
+    Var <- SumSquares/(Nvalid-1) - (Sum^2)/(Nvalid*(Nvalid-1))
     return (list(Nvalid=Nvalid,Mean=Mean,Var=Var))
 }
 
 computeStudentTestSplit <- function(Nstudies, input_x, input_y) {
     StudentTest <- c()
     for (i in 1:Nstudies){
-        x_stats <- computeLocalStats(input_x[[i]])
-        y_stats <- computeLocalStats(input_y[[i]])
+        x_stats <- computeLocalStats(input_x$Sum[[i]], input_x$SumSquares[[i]], input_x$Nvalid[[i]])
+        y_stats <- computeLocalStats(input_y$Sum[[i]], input_y$SumSquares[[i]], input_y$Nvalid[[i]])
         StudentTest[i] <- (x_stats$Mean - y_stats$Mean)/sqrt(x_stats$Var / x_stats$Nvalid + y_stats$Var / y_stats$Nvalid) 
     }
     return (StudentTest)
+}
+
+getGroupResult <- function(datasources, input, epsilon, input_min, input_max) {
+    split_epsilon <- epsilon/3
+    SumSquares <- getAggregation(datasources, paste0("sumSquaresDP(", input, ", ", split_epsilon, ", ", input_min, ", ", input_max, ")"))
+    Sum <- getAggregation(datasources, paste0("sumDP(", input, ", ", split_epsilon, ", ", input_min, ", ", input_max, ")"))
+    Nvalid <- getAggregation(datasources, paste0("numValidDP(", input, ", ", split_epsilon, ")"))
+    res <- list(Sum=Sum, SumSquares=SumSquares, Nvalid=Nvalid)
+    return (res)
 }

@@ -9,7 +9,8 @@ ds.boundedVarianceDP(
   epsilon,
   lower_bound,
   upper_bound,
-  datasources = NULL
+  datasources = NULL,
+  type = "combine"
 )
 }
 \arguments{
@@ -24,6 +25,9 @@ ds.boundedVarianceDP(
 \item{datasources}{a list of \code{\link{DSConnection-class}}
 objects obtained after login. If the \code{datasources} argument is not specified
 the default set of connections will be used: see \code{\link{datashield.connections_default}}.}
+
+\item{type}{a character string that represents the type of analysis to carry out.
+This can be set as \code{'combine'}, \code{'split'} or \code{'both'}.}
 }
 \value{
 \code{ds.boundedVarianceDP} returns a differentially private covariance

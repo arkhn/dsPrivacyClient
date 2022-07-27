@@ -34,6 +34,9 @@ the default set of connections will be used: see \code{\link{datashield.connecti
 \item{y_min}{Lower bound for y}
 
 \item{y_max}{Upper bound for y}
+
+\item{type}{a character string that represents the type of analysis to carry out.
+This can be set as \code{'combine'}, \code{'split'} or \code{'both'}.}
 }
 \value{
 \code{ds.studentTestDP} returns a differentially private student-test

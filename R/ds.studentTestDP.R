@@ -18,14 +18,17 @@ source("R/utils.R")
 #' @return \code{ds.studentTestDP} returns a differentially private student-test
 #' @export
 
-
 ds.studentTestDP <- function(datasources, x, y, epsilon, x_min, x_max, y_min, y_max, type="combine") {
     if (is.null(datasources)) {
         datasources <- DSI::datashield.connections_find()
     }
+    if (!type %in% c("both", "split", "combine")) {
+        stop("Type must be one of 'both', 'split' or 'combine'")
+    }
+
     split_epsilon <- epsilon/2
-    res_x <- getGroupResult(datasources, x, split_epsilon, x_min, x_max)
-    res_y <- getGroupResult(datasources, y, split_epsilon, y_min, y_max)
+    res_x <- getGroupStatistics(datasources, x, split_epsilon, x_min, x_max)
+    res_y <- getGroupStatistics(datasources, y, split_epsilon, y_min, y_max)
     
     Nstudies <- length(datasources)
     
@@ -38,8 +41,6 @@ ds.studentTestDP <- function(datasources, x, y, epsilon, x_min, x_max, y_min, y_
         return(list(Global.StudentTest=studentTest.combine,Nstudies=Nstudies))
     } else if (type == "split") {
         return(list(StudentTest.by.Study=studentTest.split,Nstudies=Nstudies))
-    } else {
-        stop("type must be either 'both', 'combine' or 'split'")
     }
 }
 
@@ -82,11 +83,11 @@ computeStudentTestSplit <- function(Nstudies, input_x, input_y) {
     return (StudentTest)
 }
 
-getGroupResult <- function(datasources, input, epsilon, input_min, input_max) {
+getGroupStatistics <- function(datasources, input, epsilon, input_min, input_max) {
     split_epsilon <- epsilon/3
-    SumSquares <- getAggregation(datasources, paste0("sumSquaresDP(", input, ", ", split_epsilon, ", ", input_min, ", ", input_max, ")"))
-    Sum <- getAggregation(datasources, paste0("sumDP(", input, ", ", split_epsilon, ", ", input_min, ", ", input_max, ")"))
-    Nvalid <- getAggregation(datasources, paste0("numValidDP(", input, ", ", split_epsilon, ")"))
+    SumSquares <- callAggregationMethod(datasources, paste0("sumOfSquaresDP(", input, ", ", split_epsilon, ", ", input_min, ", ", input_max, ")"))
+    Sum <- callAggregationMethod(datasources, paste0("sumDP(", input, ", ", split_epsilon, ", ", input_min, ", ", input_max, ")"))
+    Nvalid <- callAggregationMethod(datasources, paste0("numValidDP(", input, ", ", split_epsilon, ")"))
     res <- list(Sum=Sum, SumSquares=SumSquares, Nvalid=Nvalid)
     return (res)
 }

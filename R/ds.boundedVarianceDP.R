@@ -20,12 +20,15 @@ ds.boundedVarianceDP <- function(input_data, epsilon, lower_bound, upper_bound, 
   if (is.null(datasources)) {
     datasources <- DSI::datashield.connections_find()
   }
+  if (!type %in% c("both", "split", "combine")) {
+    stop("Type must be one of 'both', 'split' or 'combine'")
+  }
 
   split_epsilon <- epsilon/3
 
-  SumSquares <- getAggregation(datasources, paste0("sumSquaresDP(", input_data, ", ", split_epsilon, ", ", lower_bound, ", ", upper_bound, ")"))
-  Sum <- getAggregation(datasources, paste0("sumDP(", input_data, ", ", split_epsilon, ", ", lower_bound, ", ", upper_bound, ")"))
-  Nvalid <- getAggregation(datasources, paste0("numValidDP(", input_data, ", ", split_epsilon, ")"))
+  SumSquares <- callAggregationMethod(datasources, paste0("sumOfSquaresDP(", input_data, ", ", split_epsilon, ", ", lower_bound, ", ", upper_bound, ")"))
+  Sum <- callAggregationMethod(datasources, paste0("sumDP(", input_data, ", ", split_epsilon, ", ", lower_bound, ", ", upper_bound, ")"))
+  Nvalid <- callAggregationMethod(datasources, paste0("numValidDP(", input_data, ", ", split_epsilon, ")"))
 
   Nstudies <- length(datasources)
 
@@ -38,8 +41,6 @@ ds.boundedVarianceDP <- function(input_data, epsilon, lower_bound, upper_bound, 
       return(list(Global.Variance=variance.combine,Nstudies=Nstudies))
   } else if (type == "split") {
       return(list(Variance.by.Study=variance.split,Nstudies=Nstudies))
-  } else {
-      stop("type must be either 'both', 'combine' or 'split'")
   }
 }
 

@@ -1,3 +1,5 @@
+source("R/utils.R")
+
 #' @title Differentially private covariance
 #'
 #' @param x First input to the covariance
@@ -14,14 +16,18 @@
 #' @return \code{ds.boundedCovarianceDP} returns a differentially private covariance
 #' @export
 
-ds.boundedCovarianceDP <- function(x, y, epsilon, x_min, x_max, y_min, y_max, datasources) {
+ds.boundedCovarianceDP <- function(x, y, epsilon, x_min, x_max, y_min, y_max, type="split", datasources=NULL) {
 
   if (is.null(datasources)) {
     datasources <- DSI::datashield.connections_find()
   }
+  if (!type %in% c("both", "split", "combine")) {
+    stop("Type must be one of 'both', 'split' or 'combine'")
+  }
 
-  cally <- paste0("boundedCovarianceDP(", x, ", ", y,  ", ", epsilon, ", ", x_min, ", ", x_max, ", ", y_min, ", ", y_max, ")")
-  result <- DSI::datashield.aggregate(datasources, as.symbol(cally))
+  covariance.split <- callAggregationMethod(datasources, paste0("boundedCovarianceDP(", x, ", ", y,  ", ", epsilon, ", ", x_min, ", ", x_max, ", ", y_min, ", ", y_max, ")"))
 
-  return(result)
+  if (type == "both") stop("Combine type not implemented") 
+  if (type == "combine") stop("NotImplemented") 
+  if (type == "split") return(list(Covariance.by.Study=covariance.split,Nstudies=Nstudies))
 }

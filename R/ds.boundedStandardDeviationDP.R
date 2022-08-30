@@ -1,3 +1,5 @@
+source("R/utils.R")
+
 #' @title Differentially private standard deviation
 #'
 #' @param input_data the input vector
@@ -11,14 +13,19 @@
 #' @return \code{ds.boundedStandardDeviationDP} returns a differentially private standard deviation
 #' @export
 
-ds.boundedStandardDeviationDP <- function(input_data, epsilon, lower_bound, upper_bound, datasources=NULL) {
+ds.boundedStandardDeviationDP <- function(input_data, epsilon, lower_bound, upper_bound, type="split", datasources=NULL) {
 
   if (is.null(datasources)) {
     datasources <- DSI::datashield.connections_find()
   }
+  if (!type %in% c("both", "split", "combine")) {
+    stop("Type must be one of 'both', 'split' or 'combine'")
+  }
 
-  cally <- paste0("boundedStandardDeviationDP(", input_data, ", ", epsilon, ", ", lower_bound, ", ", upper_bound, ")")
-  result <- DSI::datashield.aggregate(datasources, as.symbol(cally))
+  standardDeviation.split <- callAggregationMethod(datasources, paste0("boundedStandardDeviationDP(", input_data, ", ", epsilon, ", ", lower_bound, ", ", upper_bound, ")"))  
 
-  return(result)
+  return(standardDeviation.split)
+  if (type=="combine") stop("NotImplemented")
+  if (type=="split") return(list(StandardDeviation.by.Study=standardDeviation.split,Nstudies=Nstudies))
+  if (type=="both") stop("Combine type not implemented")
 }

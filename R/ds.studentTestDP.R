@@ -18,7 +18,7 @@ source("R/utils.R")
 #' @return \code{ds.studentTestDP} returns a differentially private student-test
 #' @export
 
-ds.studentTestDP <- function(datasources, x, y, epsilon, x_min, x_max, y_min, y_max, type="combine") {
+ds.studentTestDP <- function(x, y, epsilon, x_min, x_max, y_min, y_max, type="combine", datasources=NULL) {
     if (is.null(datasources)) {
         datasources <- DSI::datashield.connections_find()
     }
@@ -35,13 +35,9 @@ ds.studentTestDP <- function(datasources, x, y, epsilon, x_min, x_max, y_min, y_
     studentTest.combine <- computeStudentTestCombine(Nstudies, res_x, res_y)
     studentTest.split <- computeStudentTestSplit(Nstudies, res_x, res_y)
 
-    if (type == "both") {
-        return(list(StudentTest.by.Study=studentTest.split,Global.StudentTest=studentTest.combine,Nstudies=Nstudies))
-    } else if (type == "combine") {
-        return(list(Global.StudentTest=studentTest.combine,Nstudies=Nstudies))
-    } else if (type == "split") {
-        return(list(StudentTest.by.Study=studentTest.split,Nstudies=Nstudies))
-    }
+    if (type == "both") return(list(StudentTest.by.Study=studentTest.split,Global.StudentTest=studentTest.combine,Nstudies=Nstudies))
+    if (type == "combine") return(list(Global.StudentTest=studentTest.combine,Nstudies=Nstudies))
+    if (type == "split") return(list(StudentTest.by.Study=studentTest.split,Nstudies=Nstudies))
 }
 
 computeGlobalStats <- function(Nstudies, input) {

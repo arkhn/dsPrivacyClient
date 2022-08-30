@@ -1,3 +1,5 @@
+source("R/utils.R")
+
 #' @title Differentially private count
 #'
 #' @param input_data the input vector
@@ -19,12 +21,10 @@ ds.countDP <- function(input_data, epsilon, type="combine", datasources=NULL) {
     datasources <- DSI::datashield.connections_find()
   }
 
-  cally <- paste0("countDP(", input_data, ", ", epsilon, ")")
-  res <- DSI::datashield.aggregate(datasources, as.symbol(cally))
+  count.split <- callAggregationMethod(datasources, paste0("countDP(", input_data, ", ", epsilon, ")"))
+  count.combine <- sum(unlist(count.split))
 
-  combined <- sum(unlist(res))
-
-  if (type=="combine") return(list(Count.by.Study=res))
-  if (type=="split") return(list(Global.Count=combined))
-  if (type=="both") return(list(Count.by.Study=res,Global.Count=combined))
+  if (type=="combine") return(list(Global.Count=count.combine))
+  if (type=="split") return(list(Count.by.Study=count.split))
+  if (type=="both") return(list(Count.by.Study=count.split,Global.Count=count.combine))
 }

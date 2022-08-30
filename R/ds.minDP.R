@@ -1,3 +1,5 @@
+source("R/utils.R")
+
 #' @title Differentially private min
 #'
 #' @param input_data the input vector
@@ -20,12 +22,14 @@ ds.minDP <- function(input_data, epsilon, lower_bound, upper_bound, type="combin
   if (is.null(datasources)) {
     datasources <- DSI::datashield.connections_find()
   }
+  if (!type %in% c("both", "split", "combine")) {
+    stop("Type must be one of 'both', 'split' or 'combine'")
+  }
 
-  cally <- paste0("minDP(", input_data, ", ", epsilon, ", ", lower_bound, ", ", upper_bound, ")")
-  res <- DSI::datashield.aggregate(datasources, as.symbol(cally))
+  min.split <- callAggregationMethod(datasources, paste0("minDP(", input_data, ", ", epsilon, ", ", lower_bound, ", ", upper_bound, ")"))
+  min.combine <- min(unlist(min.split))
 
-  combined <- min(unlist(res))
-
-  if (type=="combine") return(list(Min.by.Study=res))
-  if (type=="split") return(list(Global.Min=combined))
-  if (type=="both") return(list(Min.by.Study=res,Global.Min=combined))}
+  if (type=="combine") return(list(Global.Min=min.combine))
+  if (type=="split") return(list(Min.by.Study=min.split))
+  if (type=="both") return(list(Min.by.Study=min.split,Global.Min=min.combine))
+}

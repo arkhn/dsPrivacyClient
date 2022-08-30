@@ -1,3 +1,5 @@
+source("R/utils.R")
+
 #' @title Differentially private mean
 #'
 #' @param input_data the input vector
@@ -24,16 +26,18 @@ ds.boundedMeanDP <- function(input_data, epsilon, lower_bound, upper_bound, type
   if (is.null(datasources)) {
     datasources <- DSI::datashield.connections_find()
   }
+  if (!type %in% c("both", "split", "combine")) {
+    stop("Type must be one of 'both', 'split' or 'combine'")
+  }
 
-  cally <- paste0("boundedMeanDP(", input_data, ", ", epsilon, ", ", lower_bound, ", ", upper_bound, ")")
-  res.obj <- DSI::datashield.aggregate(datasources, as.symbol(cally))
+  mean.data <- callAggregationMethod(datasources, paste0("boundedMeanDP(", input_data, ", ", epsilon, ", ", lower_bound, ", ", upper_bound, ")"))
 
   Nstudies <- length(datasources)
-  res.mat <- matrix(as.numeric(matrix(unlist(res.obj),nrow=Nstudies,byrow=TRUE)[,1:2]),nrow=Nstudies)
+  mean.mat <- matrix(as.numeric(unlist(mean.data)),nrow=Nstudies,byrow=TRUE)
+  mean.split <- mean.mat[,1]
+  mean.combine <- ((t(matrix(mean.mat[,2]))%*%mean.mat[,1])/sum(mean.mat[,2]))[[1]]
 
-  res.mat.combined <- (t(matrix(res.mat[,2]))%*%res.mat[,1])/sum(res.mat[,2])
-
-  if (type=="combine") return(list(Mean.by.Study=res.mat[,1],Nstudies=Nstudies))
-  if (type=="split") return(list(Global.Mean=res.mat.combined,Nstudies=Nstudies))
-  if (type=="both") return(list(Mean.by.Study=res.mat[,1],Global.Mean=res.mat.combined,Nstudies=Nstudies))
+  if (type=="combine") return(list(Global.Mean=mean.combine,Nstudies=Nstudies))
+  if (type=="split") return(list(Mean.by.Study=mean.split,Nstudies=Nstudies))
+  if (type=="both") return(list(Mean.by.Study=mean.split,Global.Mean=mean.combine,Nstudies=Nstudies))
 }

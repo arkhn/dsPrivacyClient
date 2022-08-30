@@ -15,7 +15,7 @@ source("R/utils.R")
 #' @return \code{ds.boundedVarianceDP} returns a differentially private covariance
 #' @export
 
-ds.boundedVarianceDP <- function(input_data, epsilon, lower_bound, upper_bound, datasources=NULL, type="combine") {
+ds.boundedVarianceDP <- function(input_data, epsilon, lower_bound, upper_bound, type="combine", datasources=NULL) {
 
   if (is.null(datasources)) {
     datasources <- DSI::datashield.connections_find()
@@ -35,13 +35,9 @@ ds.boundedVarianceDP <- function(input_data, epsilon, lower_bound, upper_bound, 
   variance.combine <- computeVarCombine(Nstudies, Sum, SumSquares, Nvalid)
   variance.split <- computeVarSplit(Nstudies, Sum, SumSquares, Nvalid)
 
-  if (type == "both") {
-      return(list(Variance.by.Study=variance.split,Global.Variance=variance.combine,Nstudies=Nstudies))
-  } else if (type == "combine") {
-      return(list(Global.Variance=variance.combine,Nstudies=Nstudies))
-  } else if (type == "split") {
-      return(list(Variance.by.Study=variance.split,Nstudies=Nstudies))
-  }
+  if (type == "both") return(list(Variance.by.Study=variance.split,Global.Variance=variance.combine,Nstudies=Nstudies))
+  if (type == "combine") return(list(Global.Variance=variance.combine,Nstudies=Nstudies))
+  if (type == "split") return(list(Variance.by.Study=variance.split,Nstudies=Nstudies))
 }
 
 computeVarCombine <- function(Nstudies, Sum, SumSquares, Nvalid) {

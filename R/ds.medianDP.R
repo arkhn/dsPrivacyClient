@@ -1,3 +1,5 @@
+source("R/utils.R")
+
 #' @title Differentially private median
 #'
 #' @param input_data the input vector
@@ -11,14 +13,18 @@
 #' @return \code{ds.medianDP} returns a differentially private median
 #' @export
 
-ds.medianDP <- function(input_data, epsilon, lower_bound, upper_bound, datasources=NULL) {
+ds.medianDP <- function(input_data, epsilon, lower_bound, upper_bound, type="split", datasources=NULL) {
 
   if (is.null(datasources)) {
     datasources <- DSI::datashield.connections_find()
   }
+  if (!type %in% c("both", "split", "combine")) {
+    stop("Type must be one of 'both', 'split' or 'combine'")
+  }
 
-  cally <- paste0("medianDP(", input_data, ", ", epsilon, ", ", lower_bound, ", ", upper_bound, ")")
-  result <- DSI::datashield.aggregate(datasources, as.symbol(cally))
+  median.split <- callAggregationMethod(datasources, paste0("medianDP(", input_data, ", ", epsilon, ", ", lower_bound, ", ", upper_bound, ")"))
 
-  return(result)
+  if (type == "both") stop("Combine type not implemented") 
+  if (type == "combine") stop("NotImplemented") 
+  if (type == "split") return(list(Median.by.Study=median.split,Nstudies=Nstudies))
 }

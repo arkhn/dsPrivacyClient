@@ -1,3 +1,5 @@
+source("R/utils.R")
+
 #' @title Differentially private max
 #'
 #' @param input_data the input vector
@@ -20,13 +22,14 @@ ds.maxDP <- function(input_data, epsilon, lower_bound, upper_bound, type="combin
   if (is.null(datasources)) {
     datasources <- DSI::datashield.connections_find()
   }
+  if (!type %in% c("both", "split", "combine")) {
+    stop("Type must be one of 'both', 'split' or 'combine'")
+  }
 
-  cally <- paste0("maxDP(", input_data, ", ", epsilon, ", ", lower_bound, ", ", upper_bound, ")")
-  res <- DSI::datashield.aggregate(datasources, as.symbol(cally))
+  max.split <- callAggregationMethod(datasources, paste0("maxDP(", input_data, ", ", epsilon, ", ", lower_bound, ", ", upper_bound, ")"))
+  max.combine <- max(unlist(max.split))
 
-  combined <- max(unlist(res))
-
-  if (type=="combine") return(list(Max.by.Study=res))
-  if (type=="split") return(list(Global.Max=combined))
-  if (type=="both") return(list(Max.by.Study=res,Global.Max=combined))
+  if (type=="combine") return(list(Global.Max=max.combine))
+  if (type=="split") return(list(Max.by.Study=max.split))
+  if (type=="both") return(list(Max.by.Study=max.split,Global.Max=max.combine))
 }

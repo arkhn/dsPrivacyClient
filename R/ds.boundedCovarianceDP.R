@@ -25,6 +25,7 @@ ds.boundedCovarianceDP <- function(x, y, epsilon, x_min, x_max, y_min, y_max, ty
     stop("Type must be one of 'both', 'split' or 'combine'")
   }
 
+  Nstudies <- length(datasources)
   covariance.split <- callAggregationMethod(datasources, paste0("boundedCovarianceDP(", x, ", ", y,  ", ", epsilon, ", ", x_min, ", ", x_max, ", ", y_min, ", ", y_max, ")"))
 
   if (type == "both") stop("Combine type not implemented") 

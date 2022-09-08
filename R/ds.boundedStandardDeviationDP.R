@@ -22,6 +22,7 @@ ds.boundedStandardDeviationDP <- function(input_data, epsilon, lower_bound, uppe
     stop("Type must be one of 'both', 'split' or 'combine'")
   }
 
+  Nstudies <- length(datasources)
   standardDeviation.split <- callAggregationMethod(datasources, paste0("boundedStandardDeviationDP(", input_data, ", ", epsilon, ", ", lower_bound, ", ", upper_bound, ")"))  
 
   return(standardDeviation.split)

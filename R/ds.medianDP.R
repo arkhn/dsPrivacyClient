@@ -22,6 +22,7 @@ ds.medianDP <- function(input_data, epsilon, lower_bound, upper_bound, type="spl
     stop("Type must be one of 'both', 'split' or 'combine'")
   }
 
+  Nstudies <- length(datasources)
   median.split <- callAggregationMethod(datasources, paste0("medianDP(", input_data, ", ", epsilon, ", ", lower_bound, ", ", upper_bound, ")"))
 
   if (type == "both") stop("Combine type not implemented") 

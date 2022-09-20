@@ -18,6 +18,8 @@ source("R/utils.R")
 #' @return \code{ds.studentTestDP} returns a differentially private student-test
 #' @export
 
+delta = 0.0001
+
 ds.studentTestDP <- function(x, y, epsilon, x_min, x_max, y_min, y_max, type="combine", datasources=NULL) {
     if (is.null(datasources)) {
         datasources <- DSI::datashield.connections_find()
@@ -50,7 +52,7 @@ computeGlobalStats <- function(Nstudies, input) {
         GlobalNvalid <- GlobalNvalid +  input$Nvalid[[i]]
     }
 
-    GlobalVar <- GlobalSumSquares/(GlobalNvalid-1) - (GlobalSum^2)/(GlobalNvalid*(GlobalNvalid-1))
+    GlobalVar <- max(GlobalSumSquares/(GlobalNvalid-1) - (GlobalSum^2)/(GlobalNvalid*(GlobalNvalid-1)), delta)
     GlobalMean <- GlobalSum/GlobalNvalid
     return (list(GlobalVar=GlobalVar,GlobalMean=GlobalMean,GlobalNvalid=GlobalNvalid))
 }

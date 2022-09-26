@@ -18,8 +18,6 @@ source("R/utils.R")
 #' @return \code{ds.studentTestDP} returns a differentially private student-test
 #' @export
 
-delta = 0.0001
-
 ds.studentTestDP <- function(x, y, epsilon, x_min, x_max, y_min, y_max, type="combine", datasources=NULL) {
     if (is.null(datasources)) {
         datasources <- DSI::datashield.connections_find()
@@ -67,7 +65,7 @@ computeStudentTestCombine <- function(Nstudies, input_x, input_y) {
 computeLocalStats <- function(Sum, SumSquares, Nvalid){
     Nvalid <- as.numeric(Nvalid)
     Mean <- Sum / Nvalid
-    Var <- SumSquares/(Nvalid-1) - (Sum^2)/(Nvalid*(Nvalid-1))
+    Var <- max(SumSquares/(Nvalid-1) - (Sum^2)/(Nvalid*(Nvalid-1)), delta)
     return (list(Nvalid=Nvalid,Mean=Mean,Var=Var))
 }
 

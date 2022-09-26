@@ -50,6 +50,8 @@ computeGlobalStats <- function(Nstudies, input) {
         GlobalNvalid <- GlobalNvalid +  input$Nvalid[[i]]
     }
 
+    # We take max between true variance computation and a delta (small value) to avoid misleading
+    # variance value (null or negative) due to differential privacy noise
     GlobalVar <- max(GlobalSumSquares/(GlobalNvalid-1) - (GlobalSum^2)/(GlobalNvalid*(GlobalNvalid-1)), delta)
     GlobalMean <- GlobalSum/GlobalNvalid
     return (list(GlobalVar=GlobalVar,GlobalMean=GlobalMean,GlobalNvalid=GlobalNvalid))
@@ -65,6 +67,8 @@ computeStudentTestCombine <- function(Nstudies, input_x, input_y) {
 computeLocalStats <- function(Sum, SumSquares, Nvalid){
     Nvalid <- as.numeric(Nvalid)
     Mean <- Sum / Nvalid
+    # We take max between true variance computation and a delta (small value) to avoid misleading
+    # variance value (null or negative) due to differential privacy noise
     Var <- max(SumSquares/(Nvalid-1) - (Sum^2)/(Nvalid*(Nvalid-1)), delta)
     return (list(Nvalid=Nvalid,Mean=Mean,Var=Var))
 }

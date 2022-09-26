@@ -6,6 +6,8 @@
 #'
 #' @return \code{callAggregationMethod} returns the result from a call to a function in the server
 
+# Small value to avoid misleading variance value (null or negative) due to differential privacy 
+# noise
 delta = 0.0001
 
 callAggregationMethod <- function(datasources, function_call) {

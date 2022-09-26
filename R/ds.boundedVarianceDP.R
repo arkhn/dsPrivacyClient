@@ -50,6 +50,8 @@ computeVarCombine <- function(Nstudies, Sum, SumSquares, Nvalid) {
         GlobalNvalid <- GlobalNvalid +  Nvalid[[i]]
     }
 
+    # We take max between true variance computation and a delta (small value) to avoid misleading
+    # variance value (null or negative) due to differential privacy noise
     GlobalVar <- max(GlobalSumSquares/(GlobalNvalid-1) - (GlobalSum^2)/(GlobalNvalid*(GlobalNvalid-1)), delta)
     return (GlobalVar)
 }
@@ -57,6 +59,8 @@ computeVarCombine <- function(Nstudies, Sum, SumSquares, Nvalid) {
 computeVarSplit <- function(Nstudies, Sum, SumSquares, Nvalid) {
     LocalVars <- c()
     for (i in 1:Nstudies){
+        # We take max between true variance computation and a delta (small value) to avoid misleading
+        # variance value (null or negative) due to differential privacy noise
         LocalVars[i] <- max(SumSquares[[i]]/(Nvalid[[i]]-1) - (Sum[[i]]^2)/(Nvalid[[i]]*(Nvalid[[i]]-1)), delta)
     }
     return (LocalVars)

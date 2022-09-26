@@ -50,14 +50,14 @@ computeVarCombine <- function(Nstudies, Sum, SumSquares, Nvalid) {
         GlobalNvalid <- GlobalNvalid +  Nvalid[[i]]
     }
 
-    GlobalVar <- GlobalSumSquares/(GlobalNvalid-1) - (GlobalSum^2)/(GlobalNvalid*(GlobalNvalid-1))
+    GlobalVar <- max(GlobalSumSquares/(GlobalNvalid-1) - (GlobalSum^2)/(GlobalNvalid*(GlobalNvalid-1)), delta)
     return (GlobalVar)
 }
 
 computeVarSplit <- function(Nstudies, Sum, SumSquares, Nvalid) {
     LocalVars <- c()
     for (i in 1:Nstudies){
-        LocalVars[i] <- SumSquares[[i]]/(Nvalid[[i]]-1) - (Sum[[i]]^2)/(Nvalid[[i]]*(Nvalid[[i]]-1))
+        LocalVars[i] <- max(SumSquares[[i]]/(Nvalid[[i]]-1) - (Sum[[i]]^2)/(Nvalid[[i]]*(Nvalid[[i]]-1)), delta)
     }
     return (LocalVars)
 }

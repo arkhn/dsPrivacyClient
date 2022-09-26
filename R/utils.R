@@ -6,6 +6,8 @@
 #'
 #' @return \code{callAggregationMethod} returns the result from a call to a function in the server
 
+delta = 0.0001
+
 callAggregationMethod <- function(datasources, function_call) {
   res <- DSI::datashield.aggregate(datasources, as.symbol(function_call))
   return (res)

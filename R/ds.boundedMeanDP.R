@@ -31,13 +31,26 @@ ds.boundedMeanDP <- function(input_data, epsilon, lower_bound, upper_bound, type
   }
 
   mean.data <- callAggregationMethod(datasources, paste0("boundedMeanDP(", input_data, ", ", epsilon, ", ", lower_bound, ", ", upper_bound, ")"))
-
   Nstudies <- length(datasources)
-  mean.mat <- matrix(as.numeric(unlist(mean.data)),nrow=Nstudies,byrow=TRUE)
-  mean.split <- mean.mat[,1]
-  mean.combine <- ((t(matrix(mean.mat[,2]))%*%mean.mat[,1])/sum(mean.mat[,2]))[[1]]
 
-  if (type=="combine") return(list(Global.Mean=mean.combine,Nstudies=Nstudies))
-  if (type=="split") return(list(Mean.by.Study=mean.split,Nstudies=Nstudies))
-  if (type=="both") return(list(Mean.by.Study=mean.split,Global.Mean=mean.combine,Nstudies=Nstudies))
+  both.errors <- c()
+  split.values <- c()
+  combine.values <- c()
+  combine.nvalids <- c()
+  combine.validStudies <- 0
+  for (i in 1:Nstudies){
+    split.values[i] <- mean.data[[i]][[1]]
+    if(is.na(mean.data[[i]][[3]])) {
+      combine.validStudies <- combine.validStudies + 1 
+      combine.values[combine.validStudies] <- mean.data[[i]][[1]]
+      combine.nvalids[combine.validStudies] <- mean.data[[i]][[2]]
+    }
+    both.errors[i] <- mean.data[[i]][[3]]
+  }
+
+  combine.value <- ((t(matrix(combine.nvalids))%*%combine.values)/sum(combine.nvalids))[[1]]
+
+  if (type=="combine") return(list(Global.Mean=combine.value,Nstudies=combine.validStudies, Errors=both.errors))
+  if (type=="split") return(list(Mean.by.Study=split.values,Nstudies=Nstudies, Errors=both.errors))
+  if (type=="both") return(list(Mean.by.Study=split.values,Global.Mean=combine.value,Nstudies=Nstudies, Errors=both.errors))
 }

@@ -33,7 +33,7 @@ ds.boundedMeanDP <- function(input_data, epsilon, lower_bound, upper_bound, type
   mean.data <- callAggregationMethod(datasources, paste0("boundedMeanDP(", input_data, ", ", epsilon, ", ", lower_bound, ", ", upper_bound, ")"))
 
   Nstudies <- length(datasources)
-  mean.mat <- matrix(as.numeric(unlist(mean.data)),nrow=Nstudies,byrow=TRUE)
+  mean.mat <- matrix(as.numeric(unlist(mean.data[,1:2])),nrow=Nstudies,byrow=TRUE)
   mean.split <- mean.mat[,1]
   mean.combine <- ((t(matrix(mean.mat[,2]))%*%mean.mat[,1])/sum(mean.mat[,2]))[[1]]
 

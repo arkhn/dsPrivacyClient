@@ -34,8 +34,14 @@ ds.boundedMeanDP <- function(input_data, epsilon, lower_bound, upper_bound, type
 
   Nstudies <- length(datasources)
   mean.mat <- matrix(as.numeric(unlist(mean.data)),nrow=Nstudies,byrow=TRUE)
-  mean.split <- mean.mat[,1]
-  mean.combine <- ((t(matrix(mean.mat[,2]))%*%mean.mat[,1])/sum(mean.mat[,2]))[[1]]
+
+  mean.split <- mean.mat
+  dimnames(mean.split) <- c(list(names(mean.data), names(mean.data[[1]])))
+
+  mean.combine <- t(matrix(mean.mat[1,]))
+  mean.combine[1,1] <- ((t(matrix(mean.mat[,2]))%*%mean.mat[,1])/sum(mean.mat[,2]))
+  mean.combine[1,2] <- sum(mean.mat[,2])
+  dimnames(mean.combine) <- c(list("studiesCombined"),list(names(mean.data[[1]])))
 
   if (type=="combine") return(list(Global.Mean=mean.combine,Nstudies=Nstudies))
   if (type=="split") return(list(Mean.by.Study=mean.split,Nstudies=Nstudies))

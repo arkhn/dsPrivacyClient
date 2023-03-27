@@ -26,8 +26,14 @@ ds.medianDP <- function(input_data, epsilon, lower_bound, upper_bound, type="spl
 
   Nstudies <- length(datasources)
   median.mat <- matrix(as.numeric(unlist(median.data)),nrow=Nstudies,byrow=TRUE)
-  median.split <- median.mat[,1]
-  median.combine <- ((t(matrix(median.mat[,2]))%*%median.mat[,1])/sum(median.mat[,2]))[[1]]
+
+  median.split <- median.mat
+  dimnames(median.split) <- c(list(names(median.data), names(median.data[[1]])))
+
+  median.combine <- t(matrix(median.mat[1,]))
+  median.combine[1,1] <- ((t(matrix(median.mat[,2]))%*%median.mat[,1])/sum(median.mat[,2]))
+  median.combine[1,2] <- sum(median.mat[,2])
+  dimnames(median.combine) <- c(list("studiesCombined"),list(names(median.data[[1]])))
 
   if (type=="combine") return(list(Global.Median=median.combine,Nstudies=Nstudies))
   if (type=="split") return(list(Median.by.Study=median.split,Nstudies=Nstudies))

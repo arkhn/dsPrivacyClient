@@ -22,10 +22,14 @@ ds.medianDP <- function(input_data, epsilon, lower_bound, upper_bound, type="spl
     stop("Type must be one of 'both', 'split' or 'combine'")
   }
 
-  Nstudies <- length(datasources)
-  median.split <- callAggregationMethod(datasources, paste0("medianDP(", input_data, ", ", epsilon, ", ", lower_bound, ", ", upper_bound, ")"))
+  median.data <- callAggregationMethod(datasources, paste0("medianDP(", input_data, ", ", epsilon, ", ", lower_bound, ", ", upper_bound, ")"))
 
-  if (type == "both") stop("Combine type not implemented") 
-  if (type == "combine") stop("NotImplemented") 
-  if (type == "split") return(list(Median.by.Study=median.split,Nstudies=Nstudies))
+  Nstudies <- length(datasources)
+  median.mat <- matrix(as.numeric(unlist(median.data)),nrow=Nstudies,byrow=TRUE)
+  median.split <- median.mat[,1]
+  median.combine <- ((t(matrix(median.mat[,2]))%*%median.mat[,1])/sum(median.mat[,2]))[[1]]
+
+  if (type=="combine") return(list(Global.Median=median.combine,Nstudies=Nstudies))
+  if (type=="split") return(list(Median.by.Study=median.split,Nstudies=Nstudies))
+  if (type=="both") return(list(Median.by.Study=median.split,Global.Median=median.combine,Nstudies=Nstudies))
 }

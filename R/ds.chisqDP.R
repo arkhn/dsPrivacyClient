@@ -1,6 +1,7 @@
 source("R/utils.R")
 
-#' @title Differentially private chi square computation
+#' @title Differentially private chi square computation based on
+#' https://www.univ-montp3.fr/miap/ens/AES_IDS/TD4/Exo3.html
 #'
 #' @param x first input vector
 #' @param y second input vector
